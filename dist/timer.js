@@ -26,15 +26,34 @@ function updateDisplay() {
     modeLabel.textContent = currentMode === 'work' ? '作業時間' : '休憩時間';
 }
 /**
+ * Play notification sound using Web Audio API
+ */
+function playNotificationSound() {
+    const audioContext = new AudioContext();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    // 通知音の設定
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+}
+/**
  * Switch between work and break modes
  */
 function switchMode() {
+    // 通知音を鳴らす
+    playNotificationSound();
+    // モードを切り替え
     currentMode = currentMode === 'work' ? 'break' : 'work';
     timeRemaining = currentMode === 'work' ? WORK_TIME : BREAK_TIME;
     updateDisplay();
-    // タイマー完了の通知
-    const modeName = currentMode === 'work' ? '作業' : '休憩';
-    alert(`${currentMode === 'work' ? '休憩' : '作業'}が終了しました！${modeName}を開始してください。`);
+    // 自動的に次のタイマーを開始
+    startTimer();
 }
 /**
  * Timer tick function
