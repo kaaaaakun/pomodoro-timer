@@ -57,7 +57,7 @@ function saveTodos() {
  */
 function renderTodos() {
     todoList.innerHTML = '';
-    todos.forEach((todo) => {
+    todos.forEach((todo, index) => {
         const todoItem = document.createElement('div');
         todoItem.className = 'todo-item';
         if (todo.id === currentTodoId) {
@@ -73,16 +73,43 @@ function renderTodos() {
         todoTime.textContent = formatMinutes(todo.workTime);
         todoContent.appendChild(todoText);
         todoContent.appendChild(todoTime);
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'todo-buttons';
+        // 上へ移動ボタン
+        if (index > 0) {
+            const upBtn = document.createElement('button');
+            upBtn.className = 'move-btn';
+            upBtn.textContent = '↑';
+            upBtn.onclick = (e) => {
+                e.stopPropagation();
+                moveTodoUp(index);
+            };
+            buttonGroup.appendChild(upBtn);
+        }
+        // 下へ移動ボタン
+        if (index < todos.length - 1) {
+            const downBtn = document.createElement('button');
+            downBtn.className = 'move-btn';
+            downBtn.textContent = '↓';
+            downBtn.onclick = (e) => {
+                e.stopPropagation();
+                moveTodoDown(index);
+            };
+            buttonGroup.appendChild(downBtn);
+        }
+        // 削除ボタン
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.textContent = '×';
-        deleteBtn.onclick = () => deleteTodo(todo.id);
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteTodo(todo.id);
+        };
+        buttonGroup.appendChild(deleteBtn);
         todoItem.appendChild(todoContent);
-        todoItem.appendChild(deleteBtn);
-        todoItem.onclick = (e) => {
-            if (e.target !== deleteBtn) {
-                selectTodo(todo.id);
-            }
+        todoItem.appendChild(buttonGroup);
+        todoItem.onclick = () => {
+            selectTodo(todo.id);
         };
         todoList.appendChild(todoItem);
     });
@@ -104,6 +131,7 @@ function addTodo() {
     saveTodos();
     renderTodos();
     todoInput.value = '';
+    todoInput.focus();
 }
 /**
  * Delete todo
@@ -121,6 +149,26 @@ function deleteTodo(id) {
  */
 function selectTodo(id) {
     currentTodoId = id;
+    renderTodos();
+}
+/**
+ * Move todo up in the list
+ */
+function moveTodoUp(index) {
+    if (index <= 0)
+        return;
+    [todos[index - 1], todos[index]] = [todos[index], todos[index - 1]];
+    saveTodos();
+    renderTodos();
+}
+/**
+ * Move todo down in the list
+ */
+function moveTodoDown(index) {
+    if (index >= todos.length - 1)
+        return;
+    [todos[index], todos[index + 1]] = [todos[index + 1], todos[index]];
+    saveTodos();
     renderTodos();
 }
 /**

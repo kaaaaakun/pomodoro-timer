@@ -179,7 +179,7 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-right: 1rem;
+  margin-right: 0.75rem;
 }
 
 .todo-text {
@@ -187,34 +187,69 @@ h2 {
   color: #333;
   flex: 1;
   text-align: left;
+  word-break: break-word;
 }
 
 .todo-time {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #667eea;
   font-weight: 600;
   margin-left: 1rem;
+  white-space: nowrap;
+  background: #e8eeff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
 }
 
-.delete-btn {
-  width: 2rem;
-  height: 2rem;
+.todo-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.move-btn {
+  width: 1.75rem;
+  height: 1.75rem;
   border: none;
-  background: #ff6b6b;
+  background: #667eea;
   color: white;
-  border-radius: 50%;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 1rem;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.move-btn:hover {
+  background: #5568d3;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: none;
+  background: #ff6b6b;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
 .delete-btn:hover {
   background: #ff5252;
+  transform: scale(1.1);
 }
 
 @media (max-width: 768px) {
