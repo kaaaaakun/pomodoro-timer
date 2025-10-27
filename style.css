@@ -75,7 +75,25 @@ h2 {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.settings-info {
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.settings-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.settings-info span {
+  font-weight: 600;
+  color: #667eea;
 }
 
 .btn {

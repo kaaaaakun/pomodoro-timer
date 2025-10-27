@@ -18,6 +18,8 @@ const resetBtn = document.getElementById('resetBtn');
 const todoInput = document.getElementById('todoInput');
 const addTodoBtn = document.getElementById('addTodoBtn');
 const todoList = document.getElementById('todoList');
+const workTimeInfo = document.getElementById('workTimeInfo');
+const breakTimeInfo = document.getElementById('breakTimeInfo');
 /**
  * Format seconds to MM:SS format
  */
@@ -305,3 +307,6 @@ todoInput.addEventListener('keypress', (e) => {
 loadTodos();
 renderTodos();
 updateDisplay();
+// 設定時間を表示
+workTimeInfo.textContent = (WORK_TIME / 60).toString();
+breakTimeInfo.textContent = (BREAK_TIME / 60).toString();
