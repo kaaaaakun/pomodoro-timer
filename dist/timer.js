@@ -12,7 +12,7 @@ let currentTodoId = null;
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
 const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
+const resetBtn = document.getElementById('resetBtn');
 const todoInput = document.getElementById('todoInput');
 const addTodoBtn = document.getElementById('addTodoBtn');
 const todoList = document.getElementById('todoList');
@@ -290,9 +290,8 @@ function startTimer() {
     if (isRunning)
         return;
     isRunning = true;
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    stopBtn.textContent = '一時停止';
+    startBtn.textContent = '一時停止';
+    resetBtn.disabled = false;
     // 表示を更新
     renderTodos();
     initSortable();
@@ -309,8 +308,7 @@ function pauseTimer() {
         saveTodos();
     }
     stopTimerInterval();
-    startBtn.disabled = false;
-    stopBtn.textContent = 'リセット';
+    startBtn.textContent = '再開';
     // 表示を更新
     renderTodos();
     initSortable();
@@ -333,24 +331,40 @@ function resetTimer() {
     currentMode = 'work';
     timeRemaining = WORK_TIME;
     updateDisplay();
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    stopBtn.textContent = '停止';
+    startBtn.textContent = 'スタート';
+    resetBtn.disabled = true;
+    // 表示を更新
+    renderTodos();
+    initSortable();
 }
 // イベントリスナーの設定
-startBtn.addEventListener('click', startTimer);
-stopBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', () => {
     if (isRunning) {
         pauseTimer();
     }
     else {
-        resetTimer();
+        startTimer();
     }
 });
+resetBtn.addEventListener('click', resetTimer);
 addTodoBtn.addEventListener('click', addTodo);
 todoInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         addTodo();
+    }
+});
+// スペースキーで一時停止・再開
+document.addEventListener('keydown', (e) => {
+    // 入力フィールドにフォーカスがある場合は無視
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement) {
+        return;
+    }
+    // スペースキーが押された場合
+    if (e.key === ' ') {
+        e.preventDefault(); // ページスクロールを防ぐ
+        startBtn.click();
     }
 });
 // 初期化
