@@ -115,20 +115,20 @@ function renderTodos() {
         };
         const todoText = document.createElement('div');
         todoText.className = `flex-1 break-words ${todo.completed ? 'line-through text-gray-500' : 'text-gray-800'}`;
-        todoText.textContent = todo.text;
-        const todoTime = document.createElement('div');
-        todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap flex items-center gap-1';
-        todoTime.id = `todo-time-${todo.id}`;
-        // 作業中の場合は時計アイコンを追加
+        // 作業中の場合は走る人のアイコンを追加
         if (isCurrentTask) {
-            const clockIcon = document.createElement('span');
-            clockIcon.className = 'animate-pulse';
-            clockIcon.innerHTML = '⏱️';
-            todoTime.appendChild(clockIcon);
+            todoText.innerHTML = '🏃‍♀️ ';
+            const textSpan = document.createElement('span');
+            textSpan.textContent = todo.text;
+            todoText.appendChild(textSpan);
         }
-        const timeText = document.createElement('span');
-        timeText.textContent = formatWorkTime(todo.workTime);
-        todoTime.appendChild(timeText);
+        else {
+            todoText.textContent = todo.text;
+        }
+        const todoTime = document.createElement('div');
+        todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
+        todoTime.id = `todo-time-${todo.id}`;
+        todoTime.textContent = formatWorkTime(todo.workTime);
         todoContent.appendChild(todoText);
         todoContent.appendChild(todoTime);
         const buttonGroup = document.createElement('div');
