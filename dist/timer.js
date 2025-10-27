@@ -62,13 +62,26 @@ function renderTodos() {
     todoList.innerHTML = '';
     todos.forEach((todo, index) => {
         const todoItem = document.createElement('div');
-        todoItem.className = `flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer transition-all duration-200 border-2 ${todo.id === currentTodoId
+        todoItem.className = `flex items-center gap-3 p-4 bg-gray-50 rounded-xl transition-all duration-200 border-2 ${todo.id === currentTodoId
             ? 'border-indigo-500 bg-indigo-50'
-            : 'border-transparent hover:bg-gray-100'}`;
+            : 'border-transparent hover:bg-gray-100'} ${todo.completed ? 'opacity-60' : ''}`;
+        todoItem.setAttribute('data-id', todo.id);
+        // チェックボックス
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = todo.completed;
+        checkbox.className = 'w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer flex-shrink-0';
+        checkbox.onclick = (e) => {
+            e.stopPropagation();
+            toggleComplete(todo.id);
+        };
         const todoContent = document.createElement('div');
-        todoContent.className = 'flex-1 flex items-center justify-between mr-3';
+        todoContent.className = 'flex-1 flex items-center justify-between cursor-pointer';
+        todoContent.onclick = () => {
+            selectTodo(todo.id);
+        };
         const todoText = document.createElement('div');
-        todoText.className = 'text-gray-800 flex-1 break-words';
+        todoText.className = `flex-1 break-words ${todo.completed ? 'line-through text-gray-500' : 'text-gray-800'}`;
         todoText.textContent = todo.text;
         const todoTime = document.createElement('div');
         todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
@@ -77,28 +90,6 @@ function renderTodos() {
         todoContent.appendChild(todoTime);
         const buttonGroup = document.createElement('div');
         buttonGroup.className = 'flex gap-2 items-center flex-shrink-0';
-        // 上へ移動ボタン
-        if (index > 0) {
-            const upBtn = document.createElement('button');
-            upBtn.className = 'w-8 h-8 flex items-center justify-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all hover:scale-110';
-            upBtn.textContent = '↑';
-            upBtn.onclick = (e) => {
-                e.stopPropagation();
-                moveTodoUp(index);
-            };
-            buttonGroup.appendChild(upBtn);
-        }
-        // 下へ移動ボタン
-        if (index < todos.length - 1) {
-            const downBtn = document.createElement('button');
-            downBtn.className = 'w-8 h-8 flex items-center justify-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all hover:scale-110';
-            downBtn.textContent = '↓';
-            downBtn.onclick = (e) => {
-                e.stopPropagation();
-                moveTodoDown(index);
-            };
-            buttonGroup.appendChild(downBtn);
-        }
         // 削除ボタン
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all hover:scale-110 text-xl';
@@ -108,11 +99,9 @@ function renderTodos() {
             deleteTodo(todo.id);
         };
         buttonGroup.appendChild(deleteBtn);
+        todoItem.appendChild(checkbox);
         todoItem.appendChild(todoContent);
         todoItem.appendChild(buttonGroup);
-        todoItem.onclick = () => {
-            selectTodo(todo.id);
-        };
         todoList.appendChild(todoItem);
     });
 }
@@ -127,11 +116,13 @@ function addTodo() {
         id: Date.now().toString(),
         text,
         workTime: 0,
+        completed: false,
         createdAt: Date.now(),
     };
     todos.push(todo);
     saveTodos();
     renderTodos();
+    initSortable();
     todoInput.value = '';
     todoInput.focus();
 }
@@ -145,6 +136,7 @@ function deleteTodo(id) {
     }
     saveTodos();
     renderTodos();
+    initSortable();
 }
 /**
  * Select todo to work on
@@ -152,26 +144,40 @@ function deleteTodo(id) {
 function selectTodo(id) {
     currentTodoId = id;
     renderTodos();
+    initSortable();
 }
 /**
- * Move todo up in the list
+ * Toggle todo completion status
  */
-function moveTodoUp(index) {
-    if (index <= 0)
-        return;
-    [todos[index - 1], todos[index]] = [todos[index], todos[index - 1]];
-    saveTodos();
-    renderTodos();
+function toggleComplete(id) {
+    const todo = todos.find((t) => t.id === id);
+    if (todo) {
+        todo.completed = !todo.completed;
+        saveTodos();
+        renderTodos();
+        initSortable();
+    }
 }
 /**
- * Move todo down in the list
+ * Initialize SortableJS for drag and drop
  */
-function moveTodoDown(index) {
-    if (index >= todos.length - 1)
+function initSortable() {
+    if (typeof Sortable === 'undefined')
         return;
-    [todos[index], todos[index + 1]] = [todos[index + 1], todos[index]];
-    saveTodos();
-    renderTodos();
+    new Sortable(todoList, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        dragClass: 'sortable-drag',
+        onEnd: (evt) => {
+            const oldIndex = evt.oldIndex;
+            const newIndex = evt.newIndex;
+            if (oldIndex !== undefined && newIndex !== undefined) {
+                const movedTodo = todos.splice(oldIndex, 1)[0];
+                todos.splice(newIndex, 0, movedTodo);
+                saveTodos();
+            }
+        },
+    });
 }
 /**
  * Update the timer display
@@ -309,6 +315,7 @@ todoInput.addEventListener('keypress', (e) => {
 // 初期化
 loadTodos();
 renderTodos();
+initSortable();
 updateDisplay();
 // 設定時間を表示
 workTimeInfo.textContent = (WORK_TIME / 60).toString();
