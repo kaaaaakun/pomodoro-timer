@@ -204,6 +204,16 @@ function initSortable() {
         handle: '.drag-handle',
         ghostClass: 'sortable-ghost',
         dragClass: 'sortable-drag',
+        onStart: (evt) => {
+            // ドラッグ開始時に選択状態にする
+            const draggedElement = evt.item;
+            const todoId = draggedElement.getAttribute('data-id');
+            if (todoId) {
+                currentTodoId = todoId;
+                renderTodos();
+                initSortable();
+            }
+        },
         onEnd: (evt) => {
             const oldIndex = evt.oldIndex;
             const newIndex = evt.newIndex;
