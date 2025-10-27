@@ -16,14 +16,12 @@ let sortableInstance = null;
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
 const progressBar = document.getElementById('progressBar');
-const tomatoIcon = document.getElementById('tomatoIcon');
 const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('resetBtn');
 const todoInput = document.getElementById('todoInput');
 const addTodoBtn = document.getElementById('addTodoBtn');
 const todoList = document.getElementById('todoList');
 const soundToggle = document.getElementById('soundToggle');
-const tomatoToggle = document.getElementById('tomatoToggle');
 const darkModeToggle = document.getElementById('darkModeToggle');
 /**
  * Format seconds to MM:SS format
@@ -252,10 +250,6 @@ function updateDisplay() {
     const elapsed = totalTime - timeRemaining;
     const progress = (elapsed / totalTime) * 100;
     progressBar.style.width = `${progress}%`;
-    // トマトアイコンの位置を更新
-    if (tomatoIcon) {
-        tomatoIcon.style.left = `${progress}%`;
-    }
     // モードに応じて色を変更
     if (currentMode === 'work') {
         progressBar.className = 'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
@@ -414,15 +408,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 /**
- * Toggle tomato icon visibility
- */
-function toggleTomatoIcon() {
-    if (tomatoIcon) {
-        tomatoIcon.style.display = tomatoToggle.checked ? 'block' : 'none';
-    }
-    localStorage.setItem('pomodoro-tomato', tomatoToggle.checked.toString());
-}
-/**
  * Toggle dark mode
  */
 function toggleDarkMode() {
@@ -438,12 +423,6 @@ function toggleDarkMode() {
  * Load settings from localStorage
  */
 function loadSettings() {
-    // トマト表示設定を読み込み
-    const tomatoSetting = localStorage.getItem('pomodoro-tomato');
-    if (tomatoSetting !== null) {
-        tomatoToggle.checked = tomatoSetting === 'true';
-        toggleTomatoIcon();
-    }
     // ダークモード設定を読み込み
     const darkModeSetting = localStorage.getItem('pomodoro-darkmode');
     if (darkModeSetting !== null) {
@@ -452,7 +431,6 @@ function loadSettings() {
     }
 }
 // イベントリスナーを追加
-tomatoToggle.addEventListener('change', toggleTomatoIcon);
 darkModeToggle.addEventListener('change', toggleDarkMode);
 // 初期化
 loadSettings();

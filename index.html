@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ポモドーロタイマー</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='50' cy='60' rx='35' ry='38' fill='%23FF6B6B'/%3E%3Cellipse cx='50' cy='60' rx='30' ry='33' fill='%23FF8787'/%3E%3Cellipse cx='40' cy='50' rx='10' ry='12' fill='%23FFA5A5' opacity='0.6'/%3E%3Cpath d='M35 25 L40 35 L45 28 L50 35 L55 28 L60 35 L65 25' stroke='%234CAF50' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cpath d='M50 25 Q45 15 42 10' stroke='%234CAF50' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='38' cy='12' rx='6' ry='4' fill='%234CAF50' transform='rotate(-30 38 12)'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='50' cy='55' rx='35' ry='38' fill='%23E53E3E'/%3E%3Cellipse cx='50' cy='55' rx='30' ry='33' fill='%23FC8181'/%3E%3Cellipse cx='40' cy='45' rx='10' ry='12' fill='%23FEB2B2' opacity='0.7'/%3E%3Cpath d='M35 20 L40 30 L45 23 L50 30 L55 23 L60 30 L65 20' stroke='%23276749' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M50 20 Q45 10 42 5' stroke='%23276749' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='38' cy='8' rx='7' ry='5' fill='%23276749' transform='rotate(-30 38 8)'/%3E%3Ccircle cx='50' cy='55' r='18' fill='white' opacity='0.3'/%3E%3Cline x1='50' y1='55' x2='50' y2='42' stroke='%23276749' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='50' y1='55' x2='58' y2='55' stroke='%23276749' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='55' r='2' fill='%23276749'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
@@ -67,20 +67,9 @@
         <div class="text-7xl lg:text-8xl font-bold text-gray-800 tracking-wider tabular-nums" id="timeDisplay">25:00</div>
 
         <!-- プログレスバー -->
-        <div class="mt-6 w-full max-w-xs mx-auto relative">
+        <div class="mt-6 w-full max-w-xs mx-auto">
           <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear" style="width: 0%"></div>
-          </div>
-          <!-- トマトアイコン -->
-          <div id="tomatoIcon" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-1000 ease-linear" style="left: 0%">
-            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="50" cy="60" rx="35" ry="38" fill="#FF6B6B"/>
-              <ellipse cx="50" cy="60" rx="30" ry="33" fill="#FF8787"/>
-              <ellipse cx="40" cy="50" rx="10" ry="12" fill="#FFA5A5" opacity="0.6"/>
-              <path d="M35 25 L40 35 L45 28 L50 35 L55 28 L60 35 L65 25" stroke="#4CAF50" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <path d="M50 25 Q45 15 42 10" stroke="#4CAF50" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-              <ellipse cx="38" cy="12" rx="6" ry="4" fill="#4CAF50" transform="rotate(-30 38 12)"/>
-            </svg>
           </div>
         </div>
       </div>
@@ -98,10 +87,6 @@
         <label class="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" id="soundToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500" checked>
           <span class="text-sm text-gray-600 font-medium">通知音</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="tomatoToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500" checked>
-          <span class="text-sm text-gray-600 font-medium">🍅 トマト</span>
         </label>
         <label class="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" id="darkModeToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500">
