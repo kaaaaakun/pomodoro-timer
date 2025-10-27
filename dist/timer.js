@@ -181,13 +181,19 @@ function selectTodo(id) {
  * Toggle todo completion status
  */
 function toggleComplete(id) {
-    const todo = todos.find((t) => t.id === id);
-    if (todo) {
-        todo.completed = !todo.completed;
-        saveTodos();
-        renderTodos();
-        initSortable();
+    const todoIndex = todos.findIndex((t) => t.id === id);
+    if (todoIndex === -1)
+        return;
+    const todo = todos[todoIndex];
+    todo.completed = !todo.completed;
+    // 完了マークをつけた場合、タスクを一番下に移動
+    if (todo.completed) {
+        todos.splice(todoIndex, 1);
+        todos.push(todo);
     }
+    saveTodos();
+    renderTodos();
+    initSortable();
 }
 /**
  * Initialize SortableJS for drag and drop
