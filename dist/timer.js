@@ -20,6 +20,7 @@ const addTodoBtn = document.getElementById('addTodoBtn');
 const todoList = document.getElementById('todoList');
 const workTimeInfo = document.getElementById('workTimeInfo');
 const breakTimeInfo = document.getElementById('breakTimeInfo');
+const soundToggle = document.getElementById('soundToggle');
 /**
  * Format seconds to MM:SS format
  */
@@ -61,26 +62,25 @@ function renderTodos() {
     todoList.innerHTML = '';
     todos.forEach((todo, index) => {
         const todoItem = document.createElement('div');
-        todoItem.className = 'todo-item';
-        if (todo.id === currentTodoId) {
-            todoItem.classList.add('active');
-        }
+        todoItem.className = `flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer transition-all duration-200 border-2 ${todo.id === currentTodoId
+            ? 'border-indigo-500 bg-indigo-50'
+            : 'border-transparent hover:bg-gray-100'}`;
         const todoContent = document.createElement('div');
-        todoContent.className = 'todo-content';
+        todoContent.className = 'flex-1 flex items-center justify-between mr-3';
         const todoText = document.createElement('div');
-        todoText.className = 'todo-text';
+        todoText.className = 'text-gray-800 flex-1 break-words';
         todoText.textContent = todo.text;
         const todoTime = document.createElement('div');
-        todoTime.className = 'todo-time';
+        todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
         todoTime.textContent = formatMinutes(todo.workTime);
         todoContent.appendChild(todoText);
         todoContent.appendChild(todoTime);
         const buttonGroup = document.createElement('div');
-        buttonGroup.className = 'todo-buttons';
+        buttonGroup.className = 'flex gap-2 items-center flex-shrink-0';
         // 上へ移動ボタン
         if (index > 0) {
             const upBtn = document.createElement('button');
-            upBtn.className = 'move-btn';
+            upBtn.className = 'w-8 h-8 flex items-center justify-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all hover:scale-110';
             upBtn.textContent = '↑';
             upBtn.onclick = (e) => {
                 e.stopPropagation();
@@ -91,7 +91,7 @@ function renderTodos() {
         // 下へ移動ボタン
         if (index < todos.length - 1) {
             const downBtn = document.createElement('button');
-            downBtn.className = 'move-btn';
+            downBtn.className = 'w-8 h-8 flex items-center justify-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all hover:scale-110';
             downBtn.textContent = '↓';
             downBtn.onclick = (e) => {
                 e.stopPropagation();
@@ -101,7 +101,7 @@ function renderTodos() {
         }
         // 削除ボタン
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
+        deleteBtn.className = 'w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all hover:scale-110 text-xl';
         deleteBtn.textContent = '×';
         deleteBtn.onclick = (e) => {
             e.stopPropagation();
@@ -184,6 +184,9 @@ function updateDisplay() {
  * Play notification sound using Web Audio API
  */
 function playNotificationSound() {
+    // 音がオフの場合は何もしない
+    if (!soundToggle.checked)
+        return;
     const audioContext = new AudioContext();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
