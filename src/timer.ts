@@ -146,9 +146,20 @@ function renderTodos(): void {
     todoText.textContent = todo.text;
 
     const todoTime = document.createElement('div');
-    todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
+    todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap flex items-center gap-1';
     todoTime.id = `todo-time-${todo.id}`;
-    todoTime.textContent = formatWorkTime(todo.workTime);
+
+    // 作業中の場合は時計アイコンを追加
+    if (isCurrentTask) {
+      const clockIcon = document.createElement('span');
+      clockIcon.className = 'animate-pulse';
+      clockIcon.innerHTML = '⏱️';
+      todoTime.appendChild(clockIcon);
+    }
+
+    const timeText = document.createElement('span');
+    timeText.textContent = formatWorkTime(todo.workTime);
+    todoTime.appendChild(timeText);
 
     todoContent.appendChild(todoText);
     todoContent.appendChild(todoTime);
