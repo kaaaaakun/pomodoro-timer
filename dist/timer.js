@@ -418,7 +418,7 @@ document.addEventListener('keydown', (e) => {
  */
 function toggleTomato() {
     if (tomatoToggle.checked) {
-        tomatoIcon.style.display = 'block';
+        tomatoIcon.style.display = '';
     }
     else {
         tomatoIcon.style.display = 'none';
