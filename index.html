@@ -31,9 +31,20 @@
         <div class="text-7xl lg:text-8xl font-bold text-gray-800 tracking-wider tabular-nums" id="timeDisplay">25:00</div>
 
         <!-- プログレスバー -->
-        <div class="mt-6 w-full max-w-xs mx-auto">
+        <div class="mt-6 w-full max-w-xs mx-auto relative">
           <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear" style="width: 0%"></div>
+          </div>
+          <!-- トマトアイコン -->
+          <div id="tomatoIcon" class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-1000 ease-linear" style="left: 0%">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="50" cy="60" rx="35" ry="38" fill="#FF6B6B"/>
+              <ellipse cx="50" cy="60" rx="30" ry="33" fill="#FF8787"/>
+              <ellipse cx="40" cy="50" rx="10" ry="12" fill="#FFA5A5" opacity="0.6"/>
+              <path d="M35 25 L40 35 L45 28 L50 35 L55 28 L60 35 L65 25" stroke="#4CAF50" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M50 25 Q45 15 42 10" stroke="#4CAF50" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <ellipse cx="38" cy="12" rx="6" ry="4" fill="#4CAF50" transform="rotate(-30 38 12)"/>
+            </svg>
           </div>
         </div>
       </div>

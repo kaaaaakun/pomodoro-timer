@@ -16,6 +16,7 @@ let sortableInstance = null;
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
 const progressBar = document.getElementById('progressBar');
+const tomatoIcon = document.getElementById('tomatoIcon');
 const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('resetBtn');
 const todoInput = document.getElementById('todoInput');
@@ -249,6 +250,8 @@ function updateDisplay() {
     const elapsed = totalTime - timeRemaining;
     const progress = (elapsed / totalTime) * 100;
     progressBar.style.width = `${progress}%`;
+    // トマトアイコンの位置を更新
+    tomatoIcon.style.left = `${progress}%`;
     // モードに応じて色を変更
     if (currentMode === 'work') {
         progressBar.className = 'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
