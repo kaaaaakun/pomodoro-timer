@@ -216,7 +216,6 @@ function initSortable() {
     }
     sortableInstance = new Sortable(todoList, {
         animation: 150,
-        handle: '.drag-handle',
         ghostClass: 'sortable-ghost',
         dragClass: 'sortable-drag',
         onStart: (evt) => {
