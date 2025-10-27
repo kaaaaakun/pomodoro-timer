@@ -21,8 +21,6 @@ const resetBtn = document.getElementById('resetBtn');
 const todoInput = document.getElementById('todoInput');
 const addTodoBtn = document.getElementById('addTodoBtn');
 const todoList = document.getElementById('todoList');
-const workTimeInfo = document.getElementById('workTimeInfo');
-const breakTimeInfo = document.getElementById('breakTimeInfo');
 const soundToggle = document.getElementById('soundToggle');
 /**
  * Format seconds to MM:SS format
@@ -410,6 +408,3 @@ loadTodos();
 renderTodos();
 initSortable();
 updateDisplay();
-// 設定時間を表示
-workTimeInfo.textContent = (WORK_TIME / 60).toString();
-breakTimeInfo.textContent = (BREAK_TIME / 60).toString();
