@@ -267,7 +267,19 @@ function initSortable(): void {
       const todoId = draggedElement.getAttribute('data-id');
       if (todoId) {
         currentTodoId = todoId;
-        // ドラッグ中は再レンダリングしない
+
+        // 全タスクから選択状態のクラスを削除
+        const allTasks = todoList.querySelectorAll('[data-id]');
+        allTasks.forEach((task) => {
+          task.classList.remove('border-indigo-500', 'bg-indigo-50');
+          if (!task.classList.contains('border-green-500')) {
+            task.classList.add('border-transparent');
+          }
+        });
+
+        // ドラッグされたタスクを選択状態にする
+        draggedElement.classList.remove('border-transparent');
+        draggedElement.classList.add('border-indigo-500', 'bg-indigo-50');
       }
     },
     onEnd: (evt: any) => {
