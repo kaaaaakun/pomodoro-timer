@@ -17,6 +17,16 @@
     .sortable-drag {
       cursor: grabbing !important;
     }
+    .sortable-fallback {
+      opacity: 1 !important;
+      transform: scale(1.05) rotate(2deg);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+      background: white !important;
+      border: 2px solid #6366f1 !important;
+      cursor: grabbing !important;
+      transition: all 0.2s ease;
+      z-index: 9999 !important;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-4 sm:p-8">
