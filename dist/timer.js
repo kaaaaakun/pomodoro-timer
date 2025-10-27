@@ -1,8 +1,11 @@
 "use strict";
 // クエリパラメータから分数を取得（デバッグ用）
 const params = new URLSearchParams(window.location.search);
-const WORK_TIME = (parseInt(params.get('work') || '25', 10)) * 60;
-const BREAK_TIME = (parseInt(params.get('break') || '5', 10)) * 60;
+const workParam = parseInt(params.get('work') || '25', 10);
+const breakParam = parseInt(params.get('break') || '5', 10);
+// 不正な値（0以下、NaN、100以上）の場合はデフォルト値を使用
+const WORK_TIME = (workParam > 0 && workParam <= 100 && !isNaN(workParam) ? workParam : 25) * 60;
+const BREAK_TIME = (breakParam > 0 && breakParam <= 100 && !isNaN(breakParam) ? breakParam : 5) * 60;
 let currentMode = 'work';
 let timeRemaining = WORK_TIME;
 let timerInterval = null;
