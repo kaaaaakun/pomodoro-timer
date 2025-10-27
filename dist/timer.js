@@ -329,6 +329,7 @@ function startTimer() {
         return;
     isRunning = true;
     startBtn.textContent = '一時停止';
+    startBtn.className = 'px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
     resetBtn.disabled = true;
     // 表示を更新
     renderTodos();
@@ -347,6 +348,7 @@ function pauseTimer() {
     }
     stopTimerInterval();
     startBtn.textContent = '再開';
+    startBtn.className = 'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
     resetBtn.disabled = false;
     // 表示を更新
     renderTodos();
@@ -371,6 +373,7 @@ function resetTimer() {
     timeRemaining = WORK_TIME;
     updateDisplay();
     startBtn.textContent = 'スタート';
+    startBtn.className = 'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
     resetBtn.disabled = true;
     // 表示を更新
     renderTodos();
