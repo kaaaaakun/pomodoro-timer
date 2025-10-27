@@ -12,8 +12,7 @@ let currentTodoId = null;
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
 const startBtn = document.getElementById('startBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const resetBtn = document.getElementById('resetBtn');
+const stopBtn = document.getElementById('stopBtn');
 const todoInput = document.getElementById('todoInput');
 const addTodoBtn = document.getElementById('addTodoBtn');
 const todoList = document.getElementById('todoList');
@@ -280,7 +279,7 @@ function tick() {
         }
     }
     else {
-        stopTimer();
+        stopTimerInterval();
         switchMode();
     }
 }
@@ -292,8 +291,8 @@ function startTimer() {
         return;
     isRunning = true;
     startBtn.disabled = true;
-    pauseBtn.disabled = false;
-    resetBtn.disabled = true;
+    stopBtn.disabled = false;
+    stopBtn.textContent = '一時停止';
     // 表示を更新
     renderTodos();
     initSortable();
@@ -309,10 +308,9 @@ function pauseTimer() {
     if (currentMode === 'work') {
         saveTodos();
     }
-    stopTimer();
+    stopTimerInterval();
     startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    resetBtn.disabled = false;
+    stopBtn.textContent = 'リセット';
     // 表示を更新
     renderTodos();
     initSortable();
@@ -320,7 +318,7 @@ function pauseTimer() {
 /**
  * Stop the timer interval
  */
-function stopTimer() {
+function stopTimerInterval() {
     if (timerInterval !== null) {
         clearInterval(timerInterval);
         timerInterval = null;
@@ -331,18 +329,24 @@ function stopTimer() {
  * Reset the timer
  */
 function resetTimer() {
-    stopTimer();
+    stopTimerInterval();
     currentMode = 'work';
     timeRemaining = WORK_TIME;
     updateDisplay();
     startBtn.disabled = false;
-    pauseBtn.disabled = true;
-    resetBtn.disabled = false;
+    stopBtn.disabled = true;
+    stopBtn.textContent = '停止';
 }
 // イベントリスナーの設定
 startBtn.addEventListener('click', startTimer);
-pauseBtn.addEventListener('click', pauseTimer);
-resetBtn.addEventListener('click', resetTimer);
+stopBtn.addEventListener('click', () => {
+    if (isRunning) {
+        pauseTimer();
+    }
+    else {
+        resetTimer();
+    }
+});
 addTodoBtn.addEventListener('click', addTodo);
 todoInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
