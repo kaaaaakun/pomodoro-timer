@@ -23,6 +23,7 @@ const todoInput = document.getElementById('todoInput');
 const addTodoBtn = document.getElementById('addTodoBtn');
 const todoList = document.getElementById('todoList');
 const soundToggle = document.getElementById('soundToggle');
+const tomatoToggle = document.getElementById('tomatoToggle');
 const darkModeToggle = document.getElementById('darkModeToggle');
 /**
  * Format seconds to MM:SS format
@@ -413,6 +414,18 @@ document.addEventListener('keydown', (e) => {
     }
 });
 /**
+ * Toggle tomato icon visibility
+ */
+function toggleTomato() {
+    if (tomatoToggle.checked) {
+        tomatoIcon.style.display = 'block';
+    }
+    else {
+        tomatoIcon.style.display = 'none';
+    }
+    localStorage.setItem('pomodoro-tomato', tomatoToggle.checked.toString());
+}
+/**
  * Toggle dark mode
  */
 function toggleDarkMode() {
@@ -428,6 +441,12 @@ function toggleDarkMode() {
  * Load settings from localStorage
  */
 function loadSettings() {
+    // トマト表示設定を読み込み
+    const tomatoSetting = localStorage.getItem('pomodoro-tomato');
+    if (tomatoSetting !== null) {
+        tomatoToggle.checked = tomatoSetting === 'true';
+        toggleTomato();
+    }
     // ダークモード設定を読み込み
     const darkModeSetting = localStorage.getItem('pomodoro-darkmode');
     if (darkModeSetting !== null) {
@@ -436,6 +455,7 @@ function loadSettings() {
     }
 }
 // イベントリスナーを追加
+tomatoToggle.addEventListener('change', toggleTomato);
 darkModeToggle.addEventListener('change', toggleDarkMode);
 // 初期化
 loadSettings();
