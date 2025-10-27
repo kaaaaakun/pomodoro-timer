@@ -291,7 +291,7 @@ function startTimer() {
         return;
     isRunning = true;
     startBtn.textContent = '一時停止';
-    resetBtn.disabled = false;
+    resetBtn.disabled = true;
     // 表示を更新
     renderTodos();
     initSortable();
@@ -309,6 +309,7 @@ function pauseTimer() {
     }
     stopTimerInterval();
     startBtn.textContent = '再開';
+    resetBtn.disabled = false;
     // 表示を更新
     renderTodos();
     initSortable();

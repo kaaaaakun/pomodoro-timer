@@ -346,7 +346,7 @@ function startTimer(): void {
 
   isRunning = true;
   startBtn.textContent = '一時停止';
-  resetBtn.disabled = false;
+  resetBtn.disabled = true;
 
   // 表示を更新
   renderTodos();
@@ -368,6 +368,7 @@ function pauseTimer(): void {
 
   stopTimerInterval();
   startBtn.textContent = '再開';
+  resetBtn.disabled = false;
 
   // 表示を更新
   renderTodos();
