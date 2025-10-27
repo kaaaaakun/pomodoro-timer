@@ -22,6 +22,7 @@ let timerInterval: number | null = null;
 let isRunning = false;
 let todos: Todo[] = [];
 let currentTodoId: string | null = null;
+let sortableInstance: any = null;
 
 const timeDisplay = document.getElementById('timeDisplay') as HTMLElement;
 const modeLabel = document.getElementById('modeLabel') as HTMLElement;
@@ -240,7 +241,12 @@ function toggleComplete(id: string): void {
 function initSortable(): void {
   if (typeof Sortable === 'undefined') return;
 
-  new Sortable(todoList, {
+  // 既存のインスタンスを破棄
+  if (sortableInstance) {
+    sortableInstance.destroy();
+  }
+
+  sortableInstance = new Sortable(todoList, {
     animation: 150,
     handle: '.drag-handle',
     ghostClass: 'sortable-ghost',
@@ -251,8 +257,7 @@ function initSortable(): void {
       const todoId = draggedElement.getAttribute('data-id');
       if (todoId) {
         currentTodoId = todoId;
-        renderTodos();
-        initSortable();
+        // ドラッグ中は再レンダリングしない
       }
     },
     onEnd: (evt: any) => {
@@ -263,6 +268,8 @@ function initSortable(): void {
         const movedTodo = todos.splice(oldIndex, 1)[0];
         todos.splice(newIndex, 0, movedTodo);
         saveTodos();
+        renderTodos();
+        initSortable();
       }
     },
   });

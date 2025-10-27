@@ -9,6 +9,7 @@ let timerInterval = null;
 let isRunning = false;
 let todos = [];
 let currentTodoId = null;
+let sortableInstance = null;
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
 const startBtn = document.getElementById('startBtn');
@@ -199,7 +200,11 @@ function toggleComplete(id) {
 function initSortable() {
     if (typeof Sortable === 'undefined')
         return;
-    new Sortable(todoList, {
+    // 既存のインスタンスを破棄
+    if (sortableInstance) {
+        sortableInstance.destroy();
+    }
+    sortableInstance = new Sortable(todoList, {
         animation: 150,
         handle: '.drag-handle',
         ghostClass: 'sortable-ghost',
@@ -210,8 +215,7 @@ function initSortable() {
             const todoId = draggedElement.getAttribute('data-id');
             if (todoId) {
                 currentTodoId = todoId;
-                renderTodos();
-                initSortable();
+                // ドラッグ中は再レンダリングしない
             }
         },
         onEnd: (evt) => {
@@ -221,6 +225,8 @@ function initSortable() {
                 const movedTodo = todos.splice(oldIndex, 1)[0];
                 todos.splice(newIndex, 0, movedTodo);
                 saveTodos();
+                renderTodos();
+                initSortable();
             }
         },
     });
