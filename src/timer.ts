@@ -155,10 +155,15 @@ function renderTodos(): void {
     const buttonGroup = document.createElement('div');
     buttonGroup.className = 'flex gap-2 items-center flex-shrink-0';
 
-    // 削除ボタン
+    // 削除ボタン（ゴミ箱アイコン）
     const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'w-8 h-8 flex items-center justify-center bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all hover:scale-110 text-xl';
-    deleteBtn.textContent = '×';
+    deleteBtn.className = 'w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200 rounded-lg hover:bg-red-50';
+    deleteBtn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 4.5H15M6 4.5V3C6 2.73478 6.10536 2.48043 6.29289 2.29289C6.48043 2.10536 6.73478 2 7 2H11C11.2652 2 11.5196 2.10536 11.7071 2.29289C11.8946 2.48043 12 2.73478 12 3V4.5M14 4.5V15C14 15.2652 13.8946 15.5196 13.7071 15.7071C13.5196 15.8946 13.2652 16 13 16H5C4.73478 16 4.48043 15.8946 4.29289 15.7071C4.10536 15.5196 4 15.2652 4 15V4.5H14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M7.5 8V13M10.5 8V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
     deleteBtn.onclick = (e) => {
       e.stopPropagation();
       deleteTodo(todo.id);
