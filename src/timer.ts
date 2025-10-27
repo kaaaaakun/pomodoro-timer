@@ -31,6 +31,7 @@ let sortableInstance: any = null;
 const timeDisplay = document.getElementById('timeDisplay') as HTMLElement;
 const modeLabel = document.getElementById('modeLabel') as HTMLElement;
 const progressBar = document.getElementById('progressBar') as HTMLElement;
+const tomatoIcon = document.getElementById('tomatoIcon') as HTMLElement;
 const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
 const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement;
 const todoInput = document.getElementById('todoInput') as HTMLInputElement;
@@ -296,6 +297,11 @@ function updateDisplay(): void {
   const elapsed = totalTime - timeRemaining;
   const progress = (elapsed / totalTime) * 100;
   progressBar.style.width = `${progress}%`;
+
+  // トマトアイコンの位置を更新
+  if (tomatoIcon) {
+    tomatoIcon.style.left = `${progress}%`;
+  }
 
   // モードに応じて色を変更
   if (currentMode === 'work') {
