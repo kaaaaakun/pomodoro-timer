@@ -192,6 +192,7 @@ function startTimer() {
     isRunning = true;
     startBtn.disabled = true;
     pauseBtn.disabled = false;
+    resetBtn.disabled = true;
     // 作業モードの場合、開始時刻を記録
     if (currentMode === 'work') {
         workStartTime = Date.now();
@@ -218,6 +219,7 @@ function pauseTimer() {
     stopTimer();
     startBtn.disabled = false;
     pauseBtn.disabled = true;
+    resetBtn.disabled = false;
 }
 /**
  * Stop the timer interval
@@ -239,6 +241,7 @@ function resetTimer() {
     updateDisplay();
     startBtn.disabled = false;
     pauseBtn.disabled = true;
+    resetBtn.disabled = false;
 }
 // イベントリスナーの設定
 startBtn.addEventListener('click', startTimer);

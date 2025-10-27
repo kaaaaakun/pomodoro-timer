@@ -230,6 +230,7 @@ function startTimer(): void {
   isRunning = true;
   startBtn.disabled = true;
   pauseBtn.disabled = false;
+  resetBtn.disabled = true;
 
   // 作業モードの場合、開始時刻を記録
   if (currentMode === 'work') {
@@ -260,6 +261,7 @@ function pauseTimer(): void {
   stopTimer();
   startBtn.disabled = false;
   pauseBtn.disabled = true;
+  resetBtn.disabled = false;
 }
 
 /**
@@ -284,6 +286,7 @@ function resetTimer(): void {
 
   startBtn.disabled = false;
   pauseBtn.disabled = true;
+  resetBtn.disabled = false;
 }
 
 // イベントリスナーの設定
