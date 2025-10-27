@@ -26,6 +26,7 @@ let sortableInstance: any = null;
 
 const timeDisplay = document.getElementById('timeDisplay') as HTMLElement;
 const modeLabel = document.getElementById('modeLabel') as HTMLElement;
+const progressBar = document.getElementById('progressBar') as HTMLElement;
 const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
 const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement;
 const todoInput = document.getElementById('todoInput') as HTMLInputElement;
@@ -281,6 +282,19 @@ function initSortable(): void {
 function updateDisplay(): void {
   timeDisplay.textContent = formatTime(timeRemaining);
   modeLabel.textContent = currentMode === 'work' ? '作業時間' : '休憩時間';
+
+  // プログレスバーを更新
+  const totalTime = currentMode === 'work' ? WORK_TIME : BREAK_TIME;
+  const elapsed = totalTime - timeRemaining;
+  const progress = (elapsed / totalTime) * 100;
+  progressBar.style.width = `${progress}%`;
+
+  // モードに応じて色を変更
+  if (currentMode === 'work') {
+    progressBar.className = 'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
+  } else {
+    progressBar.className = 'h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-1000 ease-linear';
+  }
 }
 
 /**

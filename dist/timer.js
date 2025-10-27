@@ -12,6 +12,7 @@ let currentTodoId = null;
 let sortableInstance = null;
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
+const progressBar = document.getElementById('progressBar');
 const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('resetBtn');
 const todoInput = document.getElementById('todoInput');
@@ -237,6 +238,18 @@ function initSortable() {
 function updateDisplay() {
     timeDisplay.textContent = formatTime(timeRemaining);
     modeLabel.textContent = currentMode === 'work' ? '作業時間' : '休憩時間';
+    // プログレスバーを更新
+    const totalTime = currentMode === 'work' ? WORK_TIME : BREAK_TIME;
+    const elapsed = totalTime - timeRemaining;
+    const progress = (elapsed / totalTime) * 100;
+    progressBar.style.width = `${progress}%`;
+    // モードに応じて色を変更
+    if (currentMode === 'work') {
+        progressBar.className = 'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
+    }
+    else {
+        progressBar.className = 'h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-1000 ease-linear';
+    }
 }
 /**
  * Play notification sound using Web Audio API

@@ -24,9 +24,18 @@
   <div class="bg-white rounded-3xl shadow-2xl flex flex-col sm:flex-row max-w-6xl w-full overflow-hidden">
     <!-- タイマーセクション -->
     <div class="flex-1 p-8 lg:p-12 text-center border-b sm:border-b-0 sm:border-r border-gray-200">
+      <h1 class="text-3xl lg:text-4xl font-bold text-indigo-600 mb-8">ポモドーロタイマー</h1>
+
       <div class="mb-8">
         <div class="text-xl text-gray-600 mb-4 font-medium" id="modeLabel">作業時間</div>
         <div class="text-7xl lg:text-8xl font-bold text-gray-800 tracking-wider tabular-nums" id="timeDisplay">25:00</div>
+
+        <!-- プログレスバー -->
+        <div class="mt-6 w-full max-w-md mx-auto">
+          <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear" style="width: 0%"></div>
+          </div>
+        </div>
       </div>
 
       <div class="flex gap-3 justify-center mb-6 flex-wrap">
@@ -74,30 +83,6 @@
 
       <div id="todoList" class="flex-1 overflow-y-auto space-y-3"></div>
     </div>
-  </div>
-
-  <!-- ポモドーロトマトイラスト -->
-  <div class="fixed bottom-4 right-4 opacity-20 hover:opacity-40 transition-opacity duration-300 pointer-events-none">
-    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- トマトの本体 -->
-      <ellipse cx="60" cy="70" rx="35" ry="38" fill="#FF6B6B"/>
-      <ellipse cx="60" cy="70" rx="30" ry="33" fill="#FF8787"/>
-
-      <!-- ハイライト -->
-      <ellipse cx="48" cy="58" rx="12" ry="15" fill="#FFA5A5" opacity="0.6"/>
-
-      <!-- ヘタの部分 -->
-      <path d="M45 32 L50 42 L55 35 L60 42 L65 35 L70 42 L75 32" stroke="#2D8659" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M47 32 L52 42 L57 35 L62 42 L67 35 L72 42 L77 32" stroke="#4CAF50" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-
-      <!-- 茎 -->
-      <path d="M60 32 Q55 20 52 15" stroke="#2D8659" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M60 32 Q55 20 52 15" stroke="#4CAF50" stroke-width="2" fill="none" stroke-linecap="round"/>
-
-      <!-- 葉っぱ -->
-      <ellipse cx="48" cy="18" rx="8" ry="5" fill="#4CAF50" transform="rotate(-30 48 18)"/>
-      <ellipse cx="48" cy="18" rx="6" ry="3" fill="#66BB6A" transform="rotate(-30 48 18)"/>
-    </svg>
   </div>
 
   <script type="module" src="./dist/timer.js"></script>
