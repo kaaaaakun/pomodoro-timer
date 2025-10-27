@@ -22,7 +22,6 @@ let timerInterval: number | null = null;
 let isRunning = false;
 let todos: Todo[] = [];
 let currentTodoId: string | null = null;
-let workStartTime: number | null = null;
 
 const timeDisplay = document.getElementById('timeDisplay') as HTMLElement;
 const modeLabel = document.getElementById('modeLabel') as HTMLElement;
@@ -46,15 +45,20 @@ function formatTime(seconds: number): string {
 }
 
 /**
- * Format minutes to display format
+ * Format seconds to display format with hours, minutes, and seconds
  */
-function formatMinutes(minutes: number): string {
-  if (minutes < 60) {
-    return `${minutes}分`;
+function formatWorkTime(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${secs}s`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${secs}s`;
+  } else {
+    return `${secs}s`;
   }
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return mins > 0 ? `${hours}時間${mins}分` : `${hours}時間`;
 }
 
 /**
@@ -64,6 +68,14 @@ function loadTodos(): void {
   const stored = localStorage.getItem('pomodoro-todos');
   if (stored) {
     todos = JSON.parse(stored);
+    // 既存データとの互換性：workTimeが大きい場合は分単位として扱い、秒単位に変換
+    todos = todos.map((todo) => {
+      if (todo.workTime > 3600) {
+        // 1時間（3600秒）より大きい場合は分単位と判断
+        return { ...todo, workTime: todo.workTime * 60 };
+      }
+      return todo;
+    });
   }
 }
 
@@ -81,11 +93,14 @@ function renderTodos(): void {
   todoList.innerHTML = '';
 
   todos.forEach((todo, index) => {
+    const isCurrentTask = index === 0 && !todo.completed && isRunning && currentMode === 'work';
     const todoItem = document.createElement('div');
-    todoItem.className = `flex items-center gap-3 p-4 bg-gray-50 rounded-xl transition-all duration-200 border-2 ${
-      todo.id === currentTodoId
+    todoItem.className = `flex items-center gap-3 p-4 rounded-xl transition-all duration-200 border-2 ${
+      isCurrentTask
+        ? 'border-green-500 bg-green-50 shadow-lg'
+        : todo.id === currentTodoId
         ? 'border-indigo-500 bg-indigo-50'
-        : 'border-transparent hover:bg-gray-100'
+        : 'border-transparent hover:bg-gray-100 bg-gray-50'
     } ${todo.completed ? 'opacity-60' : ''}`;
     todoItem.setAttribute('data-id', todo.id);
 
@@ -127,7 +142,8 @@ function renderTodos(): void {
 
     const todoTime = document.createElement('div');
     todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
-    todoTime.textContent = formatMinutes(todo.workTime);
+    todoTime.id = `todo-time-${todo.id}`;
+    todoTime.textContent = formatWorkTime(todo.workTime);
 
     todoContent.appendChild(todoText);
     todoContent.appendChild(todoTime);
@@ -273,15 +289,9 @@ function playNotificationSound(): void {
  * Switch between work and break modes
  */
 function switchMode(): void {
-  // 作業時間を記録
-  if (currentMode === 'work' && currentTodoId && workStartTime) {
-    const workDuration = Math.floor((Date.now() - workStartTime) / 1000 / 60);
-    const todo = todos.find((t) => t.id === currentTodoId);
-    if (todo) {
-      todo.workTime += workDuration;
-      saveTodos();
-      renderTodos();
-    }
+  // 作業時間を保存
+  if (currentMode === 'work') {
+    saveTodos();
   }
 
   // 通知音を鳴らす
@@ -291,6 +301,10 @@ function switchMode(): void {
   currentMode = currentMode === 'work' ? 'break' : 'work';
   timeRemaining = currentMode === 'work' ? WORK_TIME : BREAK_TIME;
   updateDisplay();
+
+  // 表示を更新
+  renderTodos();
+  initSortable();
 
   // 自動的に次のタイマーを開始
   startTimer();
@@ -303,6 +317,15 @@ function tick(): void {
   if (timeRemaining > 0) {
     timeRemaining--;
     updateDisplay();
+
+    // 作業モードの時、一番上のタスクの時間をカウントアップ
+    if (currentMode === 'work' && todos.length > 0 && !todos[0].completed) {
+      todos[0].workTime++;
+      const timeElement = document.getElementById(`todo-time-${todos[0].id}`);
+      if (timeElement) {
+        timeElement.textContent = formatWorkTime(todos[0].workTime);
+      }
+    }
   } else {
     stopTimer();
     switchMode();
@@ -320,10 +343,9 @@ function startTimer(): void {
   pauseBtn.disabled = false;
   resetBtn.disabled = true;
 
-  // 作業モードの場合、開始時刻を記録
-  if (currentMode === 'work') {
-    workStartTime = Date.now();
-  }
+  // 表示を更新
+  renderTodos();
+  initSortable();
 
   timerInterval = window.setInterval(tick, 1000);
 }
@@ -334,22 +356,19 @@ function startTimer(): void {
 function pauseTimer(): void {
   if (!isRunning) return;
 
-  // 作業時間を記録
-  if (currentMode === 'work' && currentTodoId && workStartTime) {
-    const workDuration = Math.floor((Date.now() - workStartTime) / 1000 / 60);
-    const todo = todos.find((t) => t.id === currentTodoId);
-    if (todo) {
-      todo.workTime += workDuration;
-      saveTodos();
-      renderTodos();
-    }
-    workStartTime = null;
+  // 作業時間を保存
+  if (currentMode === 'work') {
+    saveTodos();
   }
 
   stopTimer();
   startBtn.disabled = false;
   pauseBtn.disabled = true;
   resetBtn.disabled = false;
+
+  // 表示を更新
+  renderTodos();
+  initSortable();
 }
 
 /**
