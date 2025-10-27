@@ -66,6 +66,19 @@ function renderTodos() {
             ? 'border-indigo-500 bg-indigo-50'
             : 'border-transparent hover:bg-gray-100'} ${todo.completed ? 'opacity-60' : ''}`;
         todoItem.setAttribute('data-id', todo.id);
+        // ドラッグハンドル（6つの点）
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 flex-shrink-0';
+        dragHandle.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <circle cx="7" cy="5" r="1.5"/>
+        <circle cx="13" cy="5" r="1.5"/>
+        <circle cx="7" cy="10" r="1.5"/>
+        <circle cx="13" cy="10" r="1.5"/>
+        <circle cx="7" cy="15" r="1.5"/>
+        <circle cx="13" cy="15" r="1.5"/>
+      </svg>
+    `;
         // チェックボックス
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
@@ -99,6 +112,7 @@ function renderTodos() {
             deleteTodo(todo.id);
         };
         buttonGroup.appendChild(deleteBtn);
+        todoItem.appendChild(dragHandle);
         todoItem.appendChild(checkbox);
         todoItem.appendChild(todoContent);
         todoItem.appendChild(buttonGroup);
@@ -166,6 +180,7 @@ function initSortable() {
         return;
     new Sortable(todoList, {
         animation: 150,
+        handle: '.drag-handle',
         ghostClass: 'sortable-ghost',
         dragClass: 'sortable-drag',
         onEnd: (evt) => {
