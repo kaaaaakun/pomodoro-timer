@@ -245,12 +245,6 @@ function initSortable(): void {
     handle: '.drag-handle',
     ghostClass: 'sortable-ghost',
     dragClass: 'sortable-drag',
-    // モバイル対応の設定
-    forceFallback: true,
-    fallbackClass: 'sortable-fallback',
-    delayOnTouchOnly: true,
-    delay: 150,
-    touchStartThreshold: 10,
     onEnd: (evt: any) => {
       const oldIndex = evt.oldIndex;
       const newIndex = evt.newIndex;
