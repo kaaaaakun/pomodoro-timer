@@ -29,20 +29,19 @@ function formatTime(seconds) {
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 /**
- * Format seconds to display format with hours, minutes, and seconds
+ * Format seconds to display format with hours and minutes
  */
 function formatWorkTime(seconds) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
     if (hours > 0) {
-        return `${hours}h ${minutes}m ${secs}s`;
+        return `${hours}時間${minutes}分`;
     }
     else if (minutes > 0) {
-        return `${minutes}m ${secs}s`;
+        return `${minutes}分`;
     }
     else {
-        return `${secs}s`;
+        return `0分`;
     }
 }
 /**
