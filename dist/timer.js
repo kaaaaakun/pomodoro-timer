@@ -79,6 +79,7 @@ function renderTodos() {
     todoList.innerHTML = '';
     todos.forEach((todo, index) => {
         const isCurrentTask = index === 0 && !todo.completed && isRunning && currentMode === 'work';
+        const isBreakingTask = index === 0 && !todo.completed && isRunning && currentMode === 'break';
         const todoItem = document.createElement('div');
         todoItem.className = `flex items-center gap-3 p-4 rounded-xl transition-all duration-200 border-2 ${isCurrentTask
             ? 'border-green-500 bg-green-50 shadow-lg'
@@ -115,9 +116,15 @@ function renderTodos() {
         };
         const todoText = document.createElement('div');
         todoText.className = `flex-1 break-words ${todo.completed ? 'line-through text-gray-500' : 'text-gray-800'}`;
-        // 作業中の場合は走る人のアイコンを追加
+        // 作業中の場合は走る人のアイコン、休憩中の場合はコーヒーのアイコンを追加
         if (isCurrentTask) {
             todoText.innerHTML = '🏃‍♀️ ';
+            const textSpan = document.createElement('span');
+            textSpan.textContent = todo.text;
+            todoText.appendChild(textSpan);
+        }
+        else if (isBreakingTask) {
+            todoText.innerHTML = '☕ ';
             const textSpan = document.createElement('span');
             textSpan.textContent = todo.text;
             todoText.appendChild(textSpan);
