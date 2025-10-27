@@ -1,18 +1,33 @@
 type TimerMode = 'work' | 'break';
 
-const WORK_TIME = 25 * 60;
-const BREAK_TIME = 5 * 60;
+type Todo = {
+  id: string;
+  text: string;
+  workTime: number;
+  createdAt: number;
+};
+
+// クエリパラメータから分数を取得（デバッグ用）
+const params = new URLSearchParams(window.location.search);
+const WORK_TIME = (parseInt(params.get('work') || '25', 10)) * 60;
+const BREAK_TIME = (parseInt(params.get('break') || '5', 10)) * 60;
 
 let currentMode: TimerMode = 'work';
 let timeRemaining = WORK_TIME;
 let timerInterval: number | null = null;
 let isRunning = false;
+let todos: Todo[] = [];
+let currentTodoId: string | null = null;
+let workStartTime: number | null = null;
 
 const timeDisplay = document.getElementById('timeDisplay') as HTMLElement;
 const modeLabel = document.getElementById('modeLabel') as HTMLElement;
 const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
 const pauseBtn = document.getElementById('pauseBtn') as HTMLButtonElement;
 const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement;
+const todoInput = document.getElementById('todoInput') as HTMLInputElement;
+const addTodoBtn = document.getElementById('addTodoBtn') as HTMLButtonElement;
+const todoList = document.getElementById('todoList') as HTMLElement;
 
 /**
  * Format seconds to MM:SS format
@@ -21,6 +36,119 @@ function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Format minutes to display format
+ */
+function formatMinutes(minutes: number): string {
+  if (minutes < 60) {
+    return `${minutes}分`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `${hours}時間${mins}分` : `${hours}時間`;
+}
+
+/**
+ * Load todos from localStorage
+ */
+function loadTodos(): void {
+  const stored = localStorage.getItem('pomodoro-todos');
+  if (stored) {
+    todos = JSON.parse(stored);
+  }
+}
+
+/**
+ * Save todos to localStorage
+ */
+function saveTodos(): void {
+  localStorage.setItem('pomodoro-todos', JSON.stringify(todos));
+}
+
+/**
+ * Render todo list
+ */
+function renderTodos(): void {
+  todoList.innerHTML = '';
+
+  todos.forEach((todo) => {
+    const todoItem = document.createElement('div');
+    todoItem.className = 'todo-item';
+    if (todo.id === currentTodoId) {
+      todoItem.classList.add('active');
+    }
+
+    const todoContent = document.createElement('div');
+    todoContent.className = 'todo-content';
+
+    const todoText = document.createElement('div');
+    todoText.className = 'todo-text';
+    todoText.textContent = todo.text;
+
+    const todoTime = document.createElement('div');
+    todoTime.className = 'todo-time';
+    todoTime.textContent = formatMinutes(todo.workTime);
+
+    todoContent.appendChild(todoText);
+    todoContent.appendChild(todoTime);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = '×';
+    deleteBtn.onclick = () => deleteTodo(todo.id);
+
+    todoItem.appendChild(todoContent);
+    todoItem.appendChild(deleteBtn);
+    todoItem.onclick = (e) => {
+      if (e.target !== deleteBtn) {
+        selectTodo(todo.id);
+      }
+    };
+
+    todoList.appendChild(todoItem);
+  });
+}
+
+/**
+ * Add new todo
+ */
+function addTodo(): void {
+  const text = todoInput.value.trim();
+  if (!text) return;
+
+  const todo: Todo = {
+    id: Date.now().toString(),
+    text,
+    workTime: 0,
+    createdAt: Date.now(),
+  };
+
+  todos.push(todo);
+  saveTodos();
+  renderTodos();
+  todoInput.value = '';
+}
+
+/**
+ * Delete todo
+ */
+function deleteTodo(id: string): void {
+  todos = todos.filter((todo) => todo.id !== id);
+  if (currentTodoId === id) {
+    currentTodoId = null;
+  }
+  saveTodos();
+  renderTodos();
+}
+
+/**
+ * Select todo to work on
+ */
+function selectTodo(id: string): void {
+  currentTodoId = id;
+  renderTodos();
 }
 
 /**
@@ -57,6 +185,17 @@ function playNotificationSound(): void {
  * Switch between work and break modes
  */
 function switchMode(): void {
+  // 作業時間を記録
+  if (currentMode === 'work' && currentTodoId && workStartTime) {
+    const workDuration = Math.floor((Date.now() - workStartTime) / 1000 / 60);
+    const todo = todos.find((t) => t.id === currentTodoId);
+    if (todo) {
+      todo.workTime += workDuration;
+      saveTodos();
+      renderTodos();
+    }
+  }
+
   // 通知音を鳴らす
   playNotificationSound();
 
@@ -92,6 +231,11 @@ function startTimer(): void {
   startBtn.disabled = true;
   pauseBtn.disabled = false;
 
+  // 作業モードの場合、開始時刻を記録
+  if (currentMode === 'work') {
+    workStartTime = Date.now();
+  }
+
   timerInterval = window.setInterval(tick, 1000);
 }
 
@@ -100,6 +244,18 @@ function startTimer(): void {
  */
 function pauseTimer(): void {
   if (!isRunning) return;
+
+  // 作業時間を記録
+  if (currentMode === 'work' && currentTodoId && workStartTime) {
+    const workDuration = Math.floor((Date.now() - workStartTime) / 1000 / 60);
+    const todo = todos.find((t) => t.id === currentTodoId);
+    if (todo) {
+      todo.workTime += workDuration;
+      saveTodos();
+      renderTodos();
+    }
+    workStartTime = null;
+  }
 
   stopTimer();
   startBtn.disabled = false;
@@ -134,6 +290,14 @@ function resetTimer(): void {
 startBtn.addEventListener('click', startTimer);
 pauseBtn.addEventListener('click', pauseTimer);
 resetBtn.addEventListener('click', resetTimer);
+addTodoBtn.addEventListener('click', addTodo);
+todoInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    addTodo();
+  }
+});
 
-// 初期表示
+// 初期化
+loadTodos();
+renderTodos();
 updateDisplay();

@@ -7,23 +7,31 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>ポモドーロタイマー</h1>
+  <div class="main-container">
+    <div class="timer-section">
+      <h1>ポモドーロタイマー</h1>
 
-    <div class="timer-display">
-      <div class="mode-label" id="modeLabel">作業時間</div>
-      <div class="time" id="timeDisplay">25:00</div>
+      <div class="timer-display">
+        <div class="mode-label" id="modeLabel">作業時間</div>
+        <div class="time" id="timeDisplay">25:00</div>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn" class="btn btn-primary">スタート</button>
+        <button id="pauseBtn" class="btn btn-secondary" disabled>一時停止</button>
+        <button id="resetBtn" class="btn btn-secondary">リセット</button>
+      </div>
     </div>
 
-    <div class="controls">
-      <button id="startBtn" class="btn btn-primary">スタート</button>
-      <button id="pauseBtn" class="btn btn-secondary" disabled>一時停止</button>
-      <button id="resetBtn" class="btn btn-secondary">リセット</button>
-    </div>
+    <div class="todo-section">
+      <h2>タスク</h2>
 
-    <div class="info">
-      <p>作業時間: 25分</p>
-      <p>休憩時間: 5分</p>
+      <div class="todo-input-group">
+        <input type="text" id="todoInput" placeholder="新しいタスクを追加" />
+        <button id="addTodoBtn" class="btn btn-add">+</button>
+      </div>
+
+      <div id="todoList" class="todo-list"></div>
     </div>
   </div>
 

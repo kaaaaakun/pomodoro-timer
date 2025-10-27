@@ -1,15 +1,23 @@
 "use strict";
-const WORK_TIME = 25 * 60;
-const BREAK_TIME = 5 * 60;
+// クエリパラメータから分数を取得（デバッグ用）
+const params = new URLSearchParams(window.location.search);
+const WORK_TIME = (parseInt(params.get('work') || '25', 10)) * 60;
+const BREAK_TIME = (parseInt(params.get('break') || '5', 10)) * 60;
 let currentMode = 'work';
 let timeRemaining = WORK_TIME;
 let timerInterval = null;
 let isRunning = false;
+let todos = [];
+let currentTodoId = null;
+let workStartTime = null;
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const resetBtn = document.getElementById('resetBtn');
+const todoInput = document.getElementById('todoInput');
+const addTodoBtn = document.getElementById('addTodoBtn');
+const todoList = document.getElementById('todoList');
 /**
  * Format seconds to MM:SS format
  */
@@ -17,6 +25,103 @@ function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+/**
+ * Format minutes to display format
+ */
+function formatMinutes(minutes) {
+    if (minutes < 60) {
+        return `${minutes}分`;
+    }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return mins > 0 ? `${hours}時間${mins}分` : `${hours}時間`;
+}
+/**
+ * Load todos from localStorage
+ */
+function loadTodos() {
+    const stored = localStorage.getItem('pomodoro-todos');
+    if (stored) {
+        todos = JSON.parse(stored);
+    }
+}
+/**
+ * Save todos to localStorage
+ */
+function saveTodos() {
+    localStorage.setItem('pomodoro-todos', JSON.stringify(todos));
+}
+/**
+ * Render todo list
+ */
+function renderTodos() {
+    todoList.innerHTML = '';
+    todos.forEach((todo) => {
+        const todoItem = document.createElement('div');
+        todoItem.className = 'todo-item';
+        if (todo.id === currentTodoId) {
+            todoItem.classList.add('active');
+        }
+        const todoContent = document.createElement('div');
+        todoContent.className = 'todo-content';
+        const todoText = document.createElement('div');
+        todoText.className = 'todo-text';
+        todoText.textContent = todo.text;
+        const todoTime = document.createElement('div');
+        todoTime.className = 'todo-time';
+        todoTime.textContent = formatMinutes(todo.workTime);
+        todoContent.appendChild(todoText);
+        todoContent.appendChild(todoTime);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = '×';
+        deleteBtn.onclick = () => deleteTodo(todo.id);
+        todoItem.appendChild(todoContent);
+        todoItem.appendChild(deleteBtn);
+        todoItem.onclick = (e) => {
+            if (e.target !== deleteBtn) {
+                selectTodo(todo.id);
+            }
+        };
+        todoList.appendChild(todoItem);
+    });
+}
+/**
+ * Add new todo
+ */
+function addTodo() {
+    const text = todoInput.value.trim();
+    if (!text)
+        return;
+    const todo = {
+        id: Date.now().toString(),
+        text,
+        workTime: 0,
+        createdAt: Date.now(),
+    };
+    todos.push(todo);
+    saveTodos();
+    renderTodos();
+    todoInput.value = '';
+}
+/**
+ * Delete todo
+ */
+function deleteTodo(id) {
+    todos = todos.filter((todo) => todo.id !== id);
+    if (currentTodoId === id) {
+        currentTodoId = null;
+    }
+    saveTodos();
+    renderTodos();
+}
+/**
+ * Select todo to work on
+ */
+function selectTodo(id) {
+    currentTodoId = id;
+    renderTodos();
 }
 /**
  * Update the timer display
@@ -46,6 +151,16 @@ function playNotificationSound() {
  * Switch between work and break modes
  */
 function switchMode() {
+    // 作業時間を記録
+    if (currentMode === 'work' && currentTodoId && workStartTime) {
+        const workDuration = Math.floor((Date.now() - workStartTime) / 1000 / 60);
+        const todo = todos.find((t) => t.id === currentTodoId);
+        if (todo) {
+            todo.workTime += workDuration;
+            saveTodos();
+            renderTodos();
+        }
+    }
     // 通知音を鳴らす
     playNotificationSound();
     // モードを切り替え
@@ -77,6 +192,10 @@ function startTimer() {
     isRunning = true;
     startBtn.disabled = true;
     pauseBtn.disabled = false;
+    // 作業モードの場合、開始時刻を記録
+    if (currentMode === 'work') {
+        workStartTime = Date.now();
+    }
     timerInterval = window.setInterval(tick, 1000);
 }
 /**
@@ -85,6 +204,17 @@ function startTimer() {
 function pauseTimer() {
     if (!isRunning)
         return;
+    // 作業時間を記録
+    if (currentMode === 'work' && currentTodoId && workStartTime) {
+        const workDuration = Math.floor((Date.now() - workStartTime) / 1000 / 60);
+        const todo = todos.find((t) => t.id === currentTodoId);
+        if (todo) {
+            todo.workTime += workDuration;
+            saveTodos();
+            renderTodos();
+        }
+        workStartTime = null;
+    }
     stopTimer();
     startBtn.disabled = false;
     pauseBtn.disabled = true;
@@ -114,5 +244,13 @@ function resetTimer() {
 startBtn.addEventListener('click', startTimer);
 pauseBtn.addEventListener('click', pauseTimer);
 resetBtn.addEventListener('click', resetTimer);
-// 初期表示
+addTodoBtn.addEventListener('click', addTodo);
+todoInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        addTodo();
+    }
+});
+// 初期化
+loadTodos();
+renderTodos();
 updateDisplay();
