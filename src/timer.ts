@@ -63,37 +63,49 @@ const tomatoToggle = document.getElementById('tomatoToggle') as HTMLInputElement
 const darkModeToggle = document.getElementById('darkModeToggle') as HTMLInputElement;
 
 /**
- * Create running person SVG icon
+ * Create footprints SVG icon (Lucide)
  */
-function createRunningIcon(): SVGElement {
+function createFootprintsIcon(): SVGElement {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('width', '16');
   svg.setAttribute('height', '16');
-  svg.setAttribute('viewBox', '0 0 16 16');
-  svg.setAttribute('fill', 'currentColor');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
   svg.style.display = 'inline-block';
   svg.style.marginRight = '4px';
   svg.innerHTML = `
-    <circle cx="11" cy="2.5" r="1.5"/>
-    <path d="M8 4.5L10 3.5L11.5 4.5L11 6L9.5 7L7 6.5L6 9L8 11L8 14L7 14L7 10.5L5 8.5L4 13L3 13L4 7.5L6.5 5.5L7 4.5L8 4.5Z"/>
+    <path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/>
+    <path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/>
+    <path d="M16 17h4"/>
+    <path d="M4 13h4"/>
   `;
   return svg;
 }
 
 /**
- * Create coffee cup SVG icon
+ * Create coffee cup SVG icon (Lucide)
  */
 function createCoffeeIcon(): SVGElement {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('width', '16');
   svg.setAttribute('height', '16');
-  svg.setAttribute('viewBox', '0 0 16 16');
-  svg.setAttribute('fill', 'currentColor');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
   svg.style.display = 'inline-block';
   svg.style.marginRight = '4px';
   svg.innerHTML = `
-    <path d="M2 3h10v1h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3zm10 2v3h1a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1z"/>
-    <path d="M3 14h10v1H3v-1z"/>
+    <path d="M10 2v2"/>
+    <path d="M14 2v2"/>
+    <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/>
+    <path d="M6 2v2"/>
   `;
   return svg;
 }
@@ -203,9 +215,9 @@ function renderTodos(): void {
     todoText.className = `flex-1 break-words flex items-center ${
       todo.completed ? 'line-through text-gray-500' : 'text-gray-800'
     }`;
-    // 作業中の場合は走る人のアイコン、休憩中の場合はコーヒーのアイコンを追加
+    // 作業中の場合は足跡アイコン、休憩中の場合はコーヒーアイコンを追加
     if (isCurrentTask) {
-      todoText.appendChild(createRunningIcon());
+      todoText.appendChild(createFootprintsIcon());
       const textSpan = document.createElement('span');
       textSpan.textContent = todo.text;
       todoText.appendChild(textSpan);
