@@ -89,7 +89,8 @@ function renderTodos() {
         todoItem.setAttribute('data-id', todo.id);
         // ドラッグハンドル（6つの点）
         const dragHandle = document.createElement('div');
-        dragHandle.className = 'drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 flex-shrink-0';
+        dragHandle.className =
+            'drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 flex-shrink-0';
         dragHandle.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
         <circle cx="7" cy="5" r="1.5"/>
@@ -104,7 +105,8 @@ function renderTodos() {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = todo.completed;
-        checkbox.className = 'w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer flex-shrink-0';
+        checkbox.className =
+            'w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer flex-shrink-0';
         checkbox.onclick = (e) => {
             e.stopPropagation();
             toggleComplete(todo.id);
@@ -133,7 +135,8 @@ function renderTodos() {
             todoText.textContent = todo.text;
         }
         const todoTime = document.createElement('div');
-        todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
+        todoTime.className =
+            'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
         todoTime.id = `todo-time-${todo.id}`;
         todoTime.textContent = formatWorkTime(todo.workTime);
         todoContent.appendChild(todoText);
@@ -142,7 +145,8 @@ function renderTodos() {
         buttonGroup.className = 'flex gap-2 items-center flex-shrink-0';
         // 削除ボタン（ゴミ箱アイコン）
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200 rounded-lg hover:bg-red-50';
+        deleteBtn.className =
+            'w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200 rounded-lg hover:bg-red-50';
         deleteBtn.innerHTML = `
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 4.5H15M6 4.5V3C6 2.73478 6.10536 2.48043 6.29289 2.29289C6.48043 2.10536 6.73478 2 7 2H11C11.2652 2 11.5196 2.10536 11.7071 2.29289C11.8946 2.48043 12 2.73478 12 3V4.5M14 4.5V15C14 15.2652 13.8946 15.5196 13.7071 15.7071C13.5196 15.8946 13.2652 16 13 16H5C4.73478 16 4.48043 15.8946 4.29289 15.7071C4.10536 15.5196 4 15.2652 4 15V4.5H14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -283,10 +287,12 @@ function updateDisplay() {
     }
     // モードに応じて色を変更
     if (currentMode === 'work') {
-        progressBar.className = 'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
+        progressBar.className =
+            'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
     }
     else {
-        progressBar.className = 'h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-1000 ease-linear';
+        progressBar.className =
+            'h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-1000 ease-linear';
     }
 }
 /**
@@ -358,7 +364,8 @@ function startTimer() {
         return;
     isRunning = true;
     startBtn.textContent = '一時停止';
-    startBtn.className = 'px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
+    startBtn.className =
+        'px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
     resetBtn.disabled = true;
     // 表示を更新
     renderTodos();
@@ -377,7 +384,8 @@ function pauseTimer() {
     }
     stopTimerInterval();
     startBtn.textContent = '再開';
-    startBtn.className = 'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
+    startBtn.className =
+        'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
     resetBtn.disabled = false;
     // 表示を更新
     renderTodos();
@@ -402,7 +410,8 @@ function resetTimer() {
     timeRemaining = WORK_TIME;
     updateDisplay();
     startBtn.textContent = 'スタート';
-    startBtn.className = 'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
+    startBtn.className =
+        'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
     resetBtn.disabled = true;
     // 表示を更新
     renderTodos();
@@ -428,8 +437,7 @@ todoInput.addEventListener('keypress', (e) => {
 document.addEventListener('keydown', (e) => {
     // 入力フィールドにフォーカスがある場合は無視
     const activeElement = document.activeElement;
-    if (activeElement instanceof HTMLInputElement ||
-        activeElement instanceof HTMLTextAreaElement) {
+    if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
         return;
     }
     // スペースキーが押された場合

@@ -9,7 +9,27 @@ type Todo = {
 };
 
 // SortableJS型定義
-declare const Sortable: any;
+interface SortableEvent {
+  item: HTMLElement;
+  oldIndex?: number;
+  newIndex?: number;
+}
+
+interface SortableOptions {
+  animation?: number;
+  ghostClass?: string;
+  dragClass?: string;
+  onStart?: (evt: SortableEvent) => void;
+  onEnd?: (evt: SortableEvent) => void;
+}
+
+interface SortableInstance {
+  destroy: () => void;
+}
+
+declare const Sortable: {
+  new (element: HTMLElement, options: SortableOptions): SortableInstance;
+};
 
 // クエリパラメータから分数を取得（デバッグ用）
 const params = new URLSearchParams(window.location.search);
@@ -18,7 +38,8 @@ const breakParam = parseInt(params.get('break') || '5', 10);
 
 // 不正な値（0以下、NaN、100以上）の場合はデフォルト値を使用
 const WORK_TIME = (workParam > 0 && workParam <= 100 && !isNaN(workParam) ? workParam : 25) * 60;
-const BREAK_TIME = (breakParam > 0 && breakParam <= 100 && !isNaN(breakParam) ? breakParam : 5) * 60;
+const BREAK_TIME =
+  (breakParam > 0 && breakParam <= 100 && !isNaN(breakParam) ? breakParam : 5) * 60;
 
 let currentMode: TimerMode = 'work';
 let timeRemaining = WORK_TIME;
@@ -26,7 +47,7 @@ let timerInterval: number | null = null;
 let isRunning = false;
 let todos: Todo[] = [];
 let currentTodoId: string | null = null;
-let sortableInstance: any = null;
+let sortableInstance: SortableInstance | null = null;
 
 const timeDisplay = document.getElementById('timeDisplay') as HTMLElement;
 const modeLabel = document.getElementById('modeLabel') as HTMLElement;
@@ -105,14 +126,15 @@ function renderTodos(): void {
       isCurrentTask
         ? 'border-green-500 bg-green-50 shadow-lg'
         : todo.id === currentTodoId
-        ? 'border-indigo-500 bg-indigo-50'
-        : 'border-transparent hover:bg-gray-100 bg-gray-50'
+          ? 'border-indigo-500 bg-indigo-50'
+          : 'border-transparent hover:bg-gray-100 bg-gray-50'
     } ${todo.completed ? 'opacity-60' : ''}`;
     todoItem.setAttribute('data-id', todo.id);
 
     // ドラッグハンドル（6つの点）
     const dragHandle = document.createElement('div');
-    dragHandle.className = 'drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 flex-shrink-0';
+    dragHandle.className =
+      'drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 flex-shrink-0';
     dragHandle.innerHTML = `
       <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
         <circle cx="7" cy="5" r="1.5"/>
@@ -128,15 +150,16 @@ function renderTodos(): void {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.checked = todo.completed;
-    checkbox.className = 'w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer flex-shrink-0';
-    checkbox.onclick = (e) => {
+    checkbox.className =
+      'w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500 cursor-pointer flex-shrink-0';
+    checkbox.onclick = (e): void => {
       e.stopPropagation();
       toggleComplete(todo.id);
     };
 
     const todoContent = document.createElement('div');
     todoContent.className = 'flex-1 flex items-center justify-between cursor-pointer';
-    todoContent.onclick = () => {
+    todoContent.onclick = (): void => {
       selectTodo(todo.id);
     };
 
@@ -160,7 +183,8 @@ function renderTodos(): void {
     }
 
     const todoTime = document.createElement('div');
-    todoTime.className = 'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
+    todoTime.className =
+      'ml-4 text-sm font-semibold text-indigo-600 bg-indigo-100 px-3 py-1 rounded-lg whitespace-nowrap';
     todoTime.id = `todo-time-${todo.id}`;
     todoTime.textContent = formatWorkTime(todo.workTime);
 
@@ -172,14 +196,15 @@ function renderTodos(): void {
 
     // 削除ボタン（ゴミ箱アイコン）
     const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200 rounded-lg hover:bg-red-50';
+    deleteBtn.className =
+      'w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200 rounded-lg hover:bg-red-50';
     deleteBtn.innerHTML = `
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 4.5H15M6 4.5V3C6 2.73478 6.10536 2.48043 6.29289 2.29289C6.48043 2.10536 6.73478 2 7 2H11C11.2652 2 11.5196 2.10536 11.7071 2.29289C11.8946 2.48043 12 2.73478 12 3V4.5M14 4.5V15C14 15.2652 13.8946 15.5196 13.7071 15.7071C13.5196 15.8946 13.2652 16 13 16H5C4.73478 16 4.48043 15.8946 4.29289 15.7071C4.10536 15.5196 4 15.2652 4 15V4.5H14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M7.5 8V13M10.5 8V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     `;
-    deleteBtn.onclick = (e) => {
+    deleteBtn.onclick = (e): void => {
       e.stopPropagation();
       deleteTodo(todo.id);
     };
@@ -275,7 +300,7 @@ function initSortable(): void {
     animation: 150,
     ghostClass: 'sortable-ghost',
     dragClass: 'sortable-drag',
-    onStart: (evt: any) => {
+    onStart: (evt: SortableEvent): void => {
       // ドラッグ開始時に選択状態にする
       const draggedElement = evt.item;
       const todoId = draggedElement.getAttribute('data-id');
@@ -296,7 +321,7 @@ function initSortable(): void {
         draggedElement.classList.add('border-indigo-500', 'bg-indigo-50');
       }
     },
-    onEnd: (evt: any) => {
+    onEnd: (evt: SortableEvent): void => {
       const oldIndex = evt.oldIndex;
       const newIndex = evt.newIndex;
 
@@ -331,9 +356,11 @@ function updateDisplay(): void {
 
   // モードに応じて色を変更
   if (currentMode === 'work') {
-    progressBar.className = 'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
+    progressBar.className =
+      'h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-1000 ease-linear';
   } else {
-    progressBar.className = 'h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-1000 ease-linear';
+    progressBar.className =
+      'h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-1000 ease-linear';
   }
 }
 
@@ -417,7 +444,8 @@ function startTimer(): void {
 
   isRunning = true;
   startBtn.textContent = '一時停止';
-  startBtn.className = 'px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
+  startBtn.className =
+    'px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
   resetBtn.disabled = true;
 
   // 表示を更新
@@ -440,7 +468,8 @@ function pauseTimer(): void {
 
   stopTimerInterval();
   startBtn.textContent = '再開';
-  startBtn.className = 'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
+  startBtn.className =
+    'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
   resetBtn.disabled = false;
 
   // 表示を更新
@@ -469,7 +498,8 @@ function resetTimer(): void {
   updateDisplay();
 
   startBtn.textContent = 'スタート';
-  startBtn.className = 'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
+  startBtn.className =
+    'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
   resetBtn.disabled = true;
 
   // 表示を更新
@@ -497,10 +527,7 @@ todoInput.addEventListener('keypress', (e) => {
 document.addEventListener('keydown', (e) => {
   // 入力フィールドにフォーカスがある場合は無視
   const activeElement = document.activeElement;
-  if (
-    activeElement instanceof HTMLInputElement ||
-    activeElement instanceof HTMLTextAreaElement
-  ) {
+  if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
     return;
   }
 
