@@ -30,6 +30,10 @@ const soundToggle = document.getElementById('soundToggle');
 const tomatoToggle = document.getElementById('tomatoToggle');
 const darkModeToggle = document.getElementById('darkModeToggle');
 const bgmSelect = document.getElementById('bgmSelect');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const settingsOverlay = document.getElementById('settingsOverlay');
 /**
  * Create footprints SVG icon (Lucide)
  */
@@ -706,6 +710,18 @@ function toggleDarkMode() {
     localStorage.setItem('pomodoro-darkmode', darkModeToggle.checked.toString());
 }
 /**
+ * Open settings panel
+ */
+function openSettings() {
+    settingsPanel.classList.remove('hidden');
+}
+/**
+ * Close settings panel
+ */
+function closeSettings() {
+    settingsPanel.classList.add('hidden');
+}
+/**
  * Load settings from localStorage
  */
 function loadSettings() {
@@ -739,6 +755,10 @@ bgmSelect.addEventListener('change', () => {
         startBGM();
     }
 });
+// 設定パネルのイベントリスナー
+settingsBtn.addEventListener('click', openSettings);
+closeSettingsBtn.addEventListener('click', closeSettings);
+settingsOverlay.addEventListener('click', closeSettings);
 // 初期化
 loadSettings();
 loadTodos();

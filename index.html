@@ -76,6 +76,51 @@
     body.dark-mode .bg-indigo-100 {
       background-color: #4338ca !important;
     }
+
+    /* 設定パネルアニメーション */
+    @keyframes scale-in {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .animate-scale-in {
+      animation: scale-in 0.2s ease-out;
+    }
+
+    /* ダークモード時の設定パネル */
+    body.dark-mode #settingsPanel .bg-white {
+      background-color: #1e293b !important;
+    }
+    body.dark-mode #settingsPanel .text-gray-800 {
+      color: #e2e8f0 !important;
+    }
+    body.dark-mode #settingsPanel .text-gray-700 {
+      color: #cbd5e1 !important;
+    }
+    body.dark-mode #settingsPanel .text-gray-400 {
+      color: #64748b !important;
+    }
+    body.dark-mode #settingsPanel .hover\:text-gray-600:hover {
+      color: #94a3b8 !important;
+    }
+    body.dark-mode #settingsPanel .hover\:bg-gray-50:hover {
+      background-color: #334155 !important;
+    }
+    body.dark-mode #settingsPanel .hover\:bg-gray-100:hover {
+      background-color: #334155 !important;
+    }
+    body.dark-mode #settingsPanel .border-gray-200 {
+      border-color: #475569 !important;
+    }
+    body.dark-mode #settingsPanel select {
+      background-color: #334155 !important;
+      color: #e2e8f0 !important;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-4 sm:p-8">
@@ -116,29 +161,13 @@
         </button>
       </div>
 
-      <div class="flex items-center justify-center gap-6 flex-wrap">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="soundToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500" checked>
-          <span class="text-sm text-gray-600 font-medium">通知音</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="tomatoToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500" checked>
-          <span class="text-sm text-gray-600 font-medium">トマト</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="darkModeToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500">
-          <span class="text-sm text-gray-600 font-medium">ダークモード</span>
-        </label>
-        <label class="flex items-center gap-2">
-          <span class="text-sm text-gray-600 font-medium">BGM</span>
-          <select id="bgmSelect" class="px-3 py-1 text-sm border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none bg-white text-gray-700">
-            <option value="none">なし</option>
-            <option value="whitenoise">ホワイトノイズ</option>
-            <option value="lofi">Lo-fi風</option>
-            <option value="piano">ピアノ風</option>
-            <option value="cafe">カフェ音</option>
-          </select>
-        </label>
+      <div class="flex items-center justify-center">
+        <button id="settingsBtn" class="p-2 text-gray-600 hover:text-indigo-600 hover:bg-gray-100 rounded-lg transition-all duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -160,6 +189,61 @@
       </div>
 
       <div id="todoList" class="flex-1 overflow-y-auto space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- 設定パネル -->
+  <div id="settingsPanel" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <!-- オーバーレイ -->
+    <div id="settingsOverlay" class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+    <!-- パネル本体 -->
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 animate-scale-in">
+      <!-- ヘッダー -->
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">設定</h2>
+        <button id="closeSettingsBtn" class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 設定項目 -->
+      <div class="space-y-5">
+        <!-- 通知音 -->
+        <label class="flex items-center justify-between cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <span class="text-gray-700 font-medium">通知音</span>
+          <input type="checkbox" id="soundToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500" checked>
+        </label>
+
+        <!-- トマトアイコン -->
+        <label class="flex items-center justify-between cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <span class="text-gray-700 font-medium">トマトアイコン</span>
+          <input type="checkbox" id="tomatoToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500" checked>
+        </label>
+
+        <!-- ダークモード -->
+        <label class="flex items-center justify-between cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <span class="text-gray-700 font-medium">ダークモード</span>
+          <input type="checkbox" id="darkModeToggle" class="w-5 h-5 text-indigo-600 rounded focus:ring-2 focus:ring-indigo-500">
+        </label>
+
+        <!-- BGM -->
+        <div class="p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <label class="block mb-2">
+            <span class="text-gray-700 font-medium">BGM</span>
+          </label>
+          <select id="bgmSelect" class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none bg-white text-gray-700">
+            <option value="none">なし</option>
+            <option value="whitenoise">ホワイトノイズ</option>
+            <option value="lofi">Lo-fi風</option>
+            <option value="piano">ピアノ風</option>
+            <option value="cafe">カフェ音</option>
+          </select>
+        </div>
+      </div>
     </div>
   </div>
 
