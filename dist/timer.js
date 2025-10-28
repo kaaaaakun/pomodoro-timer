@@ -13,6 +13,10 @@ let isRunning = false;
 let todos = [];
 let currentTodoId = null;
 let sortableInstance = null;
+// BGM用の変数
+let bgmAudioContext = null;
+let bgmGainNode = null;
+let bgmNodes = [];
 const timeDisplay = document.getElementById('timeDisplay');
 const modeLabel = document.getElementById('modeLabel');
 const progressBar = document.getElementById('progressBar');
@@ -25,6 +29,7 @@ const todoList = document.getElementById('todoList');
 const soundToggle = document.getElementById('soundToggle');
 const tomatoToggle = document.getElementById('tomatoToggle');
 const darkModeToggle = document.getElementById('darkModeToggle');
+const bgmSelect = document.getElementById('bgmSelect');
 /**
  * Create footprints SVG icon (Lucide)
  */
@@ -362,6 +367,184 @@ function playNotificationSound() {
     oscillator.stop(audioContext.currentTime + 0.5);
 }
 /**
+ * Stop BGM
+ */
+function stopBGM() {
+    if (bgmAudioContext) {
+        // 全てのノードを停止
+        bgmNodes.forEach((node) => {
+            if ('stop' in node && typeof node.stop === 'function') {
+                node.stop();
+            }
+        });
+        bgmNodes = [];
+        // AudioContextをクローズ
+        bgmAudioContext.close();
+        bgmAudioContext = null;
+        bgmGainNode = null;
+    }
+}
+/**
+ * Create white noise BGM
+ */
+function createWhiteNoiseBGM() {
+    if (!bgmAudioContext)
+        return;
+    const bufferSize = 2 * bgmAudioContext.sampleRate;
+    const noiseBuffer = bgmAudioContext.createBuffer(1, bufferSize, bgmAudioContext.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+    }
+    const whiteNoise = bgmAudioContext.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+    whiteNoise.loop = true;
+    const filter = bgmAudioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 800;
+    whiteNoise.connect(filter);
+    filter.connect(bgmGainNode);
+    whiteNoise.start();
+    bgmNodes.push(whiteNoise);
+}
+/**
+ * Create Lo-fi style BGM
+ */
+function createLofiBGM() {
+    if (!bgmAudioContext)
+        return;
+    const now = bgmAudioContext.currentTime;
+    // シンプルなコード進行
+    const chords = [
+        [261.63, 329.63, 392.0], // C major
+        [293.66, 369.99, 440.0], // D minor
+        [246.94, 311.13, 369.99], // G major
+        [220.0, 277.18, 329.63], // A minor
+    ];
+    let time = now;
+    const chordDuration = 2;
+    chords.forEach((chord) => {
+        chord.forEach((freq) => {
+            const osc = bgmAudioContext.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            const oscGain = bgmAudioContext.createGain();
+            oscGain.gain.value = 0.05;
+            osc.connect(oscGain);
+            oscGain.connect(bgmGainNode);
+            osc.start(time);
+            osc.stop(time + chordDuration);
+            bgmNodes.push(osc);
+        });
+        time += chordDuration;
+    });
+    // ループ用にタイマーを設定
+    setTimeout(() => {
+        if (bgmAudioContext && bgmSelect.value === 'lofi') {
+            bgmNodes = bgmNodes.filter((node) => !('stop' in node));
+            createLofiBGM();
+        }
+    }, chords.length * chordDuration * 1000);
+}
+/**
+ * Create piano style BGM
+ */
+function createPianoBGM() {
+    if (!bgmAudioContext)
+        return;
+    const now = bgmAudioContext.currentTime;
+    // シンプルなメロディ
+    const melody = [
+        { freq: 523.25, duration: 0.5 }, // C5
+        { freq: 587.33, duration: 0.5 }, // D5
+        { freq: 659.25, duration: 0.5 }, // E5
+        { freq: 698.46, duration: 0.5 }, // F5
+        { freq: 783.99, duration: 1.0 }, // G5
+        { freq: 659.25, duration: 0.5 }, // E5
+        { freq: 523.25, duration: 1.0 }, // C5
+    ];
+    let time = now;
+    melody.forEach((note) => {
+        const osc = bgmAudioContext.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.value = note.freq;
+        const oscGain = bgmAudioContext.createGain();
+        oscGain.gain.setValueAtTime(0.1, time);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, time + note.duration);
+        osc.connect(oscGain);
+        oscGain.connect(bgmGainNode);
+        osc.start(time);
+        osc.stop(time + note.duration);
+        bgmNodes.push(osc);
+        time += note.duration;
+    });
+    // ループ用にタイマーを設定
+    setTimeout(() => {
+        if (bgmAudioContext && bgmSelect.value === 'piano') {
+            bgmNodes = bgmNodes.filter((node) => !('stop' in node));
+            createPianoBGM();
+        }
+    }, time - now);
+}
+/**
+ * Create cafe ambient BGM
+ */
+function createCafeBGM() {
+    if (!bgmAudioContext)
+        return;
+    // ピンクノイズ風の落ち着いた音
+    const bufferSize = 2 * bgmAudioContext.sampleRate;
+    const noiseBuffer = bgmAudioContext.createBuffer(1, bufferSize, bgmAudioContext.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    let b0 = 0;
+    let b1 = 0;
+    let b2 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99765 * b0 + white * 0.099046;
+        b1 = 0.963 * b1 + white * 0.2965164;
+        b2 = 0.57 * b2 + white * 1.0526913;
+        output[i] = (b0 + b1 + b2 + white * 0.1848) / 5;
+    }
+    const pinkNoise = bgmAudioContext.createBufferSource();
+    pinkNoise.buffer = noiseBuffer;
+    pinkNoise.loop = true;
+    const filter = bgmAudioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 500;
+    pinkNoise.connect(filter);
+    filter.connect(bgmGainNode);
+    pinkNoise.start();
+    bgmNodes.push(pinkNoise);
+}
+/**
+ * Start BGM based on selected type
+ */
+function startBGM() {
+    const bgmType = bgmSelect.value;
+    if (bgmType === 'none')
+        return;
+    stopBGM();
+    bgmAudioContext = new AudioContext();
+    bgmGainNode = bgmAudioContext.createGain();
+    bgmGainNode.gain.value = 0.15;
+    bgmGainNode.connect(bgmAudioContext.destination);
+    switch (bgmType) {
+        case 'whitenoise':
+            createWhiteNoiseBGM();
+            break;
+        case 'lofi':
+            createLofiBGM();
+            break;
+        case 'piano':
+            createPianoBGM();
+            break;
+        case 'cafe':
+            createCafeBGM();
+            break;
+    }
+}
+/**
  * Switch between work and break modes
  */
 function switchMode() {
@@ -416,6 +599,8 @@ function startTimer() {
     // 表示を更新
     renderTodos();
     initSortable();
+    // BGMを開始
+    startBGM();
     timerInterval = window.setInterval(tick, 1000);
 }
 /**
@@ -429,6 +614,8 @@ function pauseTimer() {
         saveTodos();
     }
     stopTimerInterval();
+    // BGMを停止
+    stopBGM();
     startBtn.textContent = '再開';
     startBtn.className =
         'px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5';
@@ -452,6 +639,8 @@ function stopTimerInterval() {
  */
 function resetTimer() {
     stopTimerInterval();
+    // BGMを停止
+    stopBGM();
     currentMode = 'work';
     timeRemaining = WORK_TIME;
     updateDisplay();
@@ -532,10 +721,24 @@ function loadSettings() {
         darkModeToggle.checked = darkModeSetting === 'true';
         toggleDarkMode();
     }
+    // BGM設定を読み込み
+    const bgmSetting = localStorage.getItem('pomodoro-bgm');
+    if (bgmSetting !== null) {
+        bgmSelect.value = bgmSetting;
+    }
 }
 // イベントリスナーを追加
 tomatoToggle.addEventListener('change', toggleTomato);
 darkModeToggle.addEventListener('change', toggleDarkMode);
+bgmSelect.addEventListener('change', () => {
+    // BGM設定を保存
+    localStorage.setItem('pomodoro-bgm', bgmSelect.value);
+    // 作業中の場合はBGMを再開
+    if (isRunning) {
+        stopBGM();
+        startBGM();
+    }
+});
 // 初期化
 loadSettings();
 loadTodos();

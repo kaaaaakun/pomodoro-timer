@@ -28,6 +28,7 @@ export default [
         Sortable: 'readonly',
         clearInterval: 'readonly',
         setInterval: 'readonly',
+        setTimeout: 'readonly',
       },
     },
     plugins: {
