@@ -63,6 +63,42 @@ const tomatoToggle = document.getElementById('tomatoToggle') as HTMLInputElement
 const darkModeToggle = document.getElementById('darkModeToggle') as HTMLInputElement;
 
 /**
+ * Create running person SVG icon
+ */
+function createRunningIcon(): SVGElement {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '16');
+  svg.setAttribute('height', '16');
+  svg.setAttribute('viewBox', '0 0 16 16');
+  svg.setAttribute('fill', 'currentColor');
+  svg.style.display = 'inline-block';
+  svg.style.marginRight = '4px';
+  svg.innerHTML = `
+    <circle cx="11" cy="2.5" r="1.5"/>
+    <path d="M8 4.5L10 3.5L11.5 4.5L11 6L9.5 7L7 6.5L6 9L8 11L8 14L7 14L7 10.5L5 8.5L4 13L3 13L4 7.5L6.5 5.5L7 4.5L8 4.5Z"/>
+  `;
+  return svg;
+}
+
+/**
+ * Create coffee cup SVG icon
+ */
+function createCoffeeIcon(): SVGElement {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', '16');
+  svg.setAttribute('height', '16');
+  svg.setAttribute('viewBox', '0 0 16 16');
+  svg.setAttribute('fill', 'currentColor');
+  svg.style.display = 'inline-block';
+  svg.style.marginRight = '4px';
+  svg.innerHTML = `
+    <path d="M2 3h10v1h1a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-1v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3zm10 2v3h1a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1z"/>
+    <path d="M3 14h10v1H3v-1z"/>
+  `;
+  return svg;
+}
+
+/**
  * Format seconds to MM:SS format
  */
 function formatTime(seconds: number): string {
@@ -164,17 +200,17 @@ function renderTodos(): void {
     };
 
     const todoText = document.createElement('div');
-    todoText.className = `flex-1 break-words ${
+    todoText.className = `flex-1 break-words flex items-center ${
       todo.completed ? 'line-through text-gray-500' : 'text-gray-800'
     }`;
     // 作業中の場合は走る人のアイコン、休憩中の場合はコーヒーのアイコンを追加
     if (isCurrentTask) {
-      todoText.innerHTML = '🏃‍♀️ ';
+      todoText.appendChild(createRunningIcon());
       const textSpan = document.createElement('span');
       textSpan.textContent = todo.text;
       todoText.appendChild(textSpan);
     } else if (isBreakingTask) {
-      todoText.innerHTML = '☕ ';
+      todoText.appendChild(createCoffeeIcon());
       const textSpan = document.createElement('span');
       textSpan.textContent = todo.text;
       todoText.appendChild(textSpan);
